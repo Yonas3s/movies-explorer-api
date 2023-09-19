@@ -6,9 +6,13 @@ const NotFoundStatus = require('../errors/NotFoundStatus');
 const ForbiddenStatus = require('../errors/ForbiddenStatus');
 
 module.exports.getMovies = (req, res, next) => {
-  Movie.find({ owner: req.user._id })
-    .then((cards) => res.status(HTTP_STATUS_OK).send(cards))
-    .catch(next);
+  Movie.find({})
+    .then((movies) => {
+      const moviesSaveByUser = movies
+        .filter((movie) => movie.owner._id.toString() === req.user._id);
+      res.status(HTTP_STATUS_OK).send(moviesSaveByUser);
+    })
+    .catch((err) => next(err));
 };
 
 module.exports.addMovie = (req, res, next) => {
