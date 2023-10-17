@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const urlRegex = require('../utils/const');
+const { urlRegex } = require('../utils/constants');
 
 const movieSchema = new mongoose.Schema({
   country: {
@@ -14,11 +14,11 @@ const movieSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Поле должно быть заполнено'],
   },
-  year: {
+  description: {
     type: String,
     required: [true, 'Поле должно быть заполнено'],
   },
-  description: {
+  year: {
     type: String,
     required: [true, 'Поле должно быть заполнено'],
   },
@@ -29,7 +29,7 @@ const movieSchema = new mongoose.Schema({
       validator(url) {
         return urlRegex.test(url);
       },
-      message: 'Некорректный URL',
+      message: 'Введите URL',
     },
   },
   trailerLink: {
@@ -39,7 +39,7 @@ const movieSchema = new mongoose.Schema({
       validator(url) {
         return urlRegex.test(url);
       },
-      message: 'Некорректный URL',
+      message: 'Введите URL',
     },
   },
   thumbnail: {
@@ -49,13 +49,17 @@ const movieSchema = new mongoose.Schema({
       validator(url) {
         return urlRegex.test(url);
       },
-      message: 'Некорректный URL',
+      message: 'Введите URL',
     },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
     required: true,
+  },
+  movieId: {
+    type: Number,
+    required: [true, 'Поле должно быть заполнено'],
   },
   nameRU: {
     type: String,
@@ -65,10 +69,6 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Поле должно быть заполнено'],
   },
-  movieId: {
-    type: Number,
-    required: true,
-  }
 }, { versionKey: false });
 
 module.exports = mongoose.model('movie', movieSchema);
