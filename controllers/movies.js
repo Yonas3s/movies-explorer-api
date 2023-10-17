@@ -112,7 +112,7 @@ module.exports.deleteMovie = (req, res, next) => {
     });
 };
 
-module.exports.createMovie = (req, res, next) => {
+module.exports.addMovie = (req, res, next) => {
   const {
     country,
     director,
