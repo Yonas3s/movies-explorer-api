@@ -72,7 +72,3 @@ module.exports.deleteMovie = (req, res, next) => {
       }
     });
 };
-const movieSchema = require('../models/movie');
-const Forbidden = require('../errors/Forbidden');
-const NotFound = require('../errors/NotFound');
-const BadRequest = require('../errors/BadRequest');
