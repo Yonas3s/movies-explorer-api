@@ -14,7 +14,7 @@ const { PORT = 3000, DB_URL = 'mongodb://127.0.0.1:27017/bitfilmsdb' } = process
 
 const app = express();
 
-app.use(cors( origin ['http://localhost:3000']));
+app.use(cors(['http://localhost:3000']));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
