@@ -49,24 +49,54 @@ module.exports.addMovie = (req, res, next) => {
     });
 };
 
+// module.exports.deleteMovie = (req, res, next) => {
+//   Movie.findById(req.params.movieId)
+//     .orFail(new NotFoundStatus('Карточка с указанным _id не найдена.'))
+//     .then((card) => {
+//       if (!card.owner.equals(req.user._id)) {
+//         throw new ForbiddenStatus('Карточка другого пользователя.');
+//       }
+//       Movie.deleteOne(card)
+//         .then(() => {
+//           res.status(HTTP_STATUS_OK).send({ message: 'Карточка удалена.' });
+//         })
+//         .catch((err) => {
+//           next(err);
+//         });
+//     })
+//     .catch((err) => {
+//       if (err instanceof mongoose.Error.CastError) {
+//         next(new BadRequestStatus('Некорректный _id карточки.'));
+//       } else {
+//         next(err);
+//       }
+//     });
+// };
 module.exports.deleteMovie = (req, res, next) => {
   Movie.findById(req.params.movieId)
-    .orFail(new NotFoundStatus('Карточка с указанным _id не найдена.'))
+    .orFail()
     .then((card) => {
       if (!card.owner.equals(req.user._id)) {
-        throw new ForbiddenStatus('Карточка другого пользователя.');
+        throw new ForbiddenError('Карточка другого пользовател');
       }
       Movie.deleteOne(card)
+        .orFail()
         .then(() => {
-          res.status(HTTP_STATUS_OK).send({ message: 'Карточка удалена.' });
+          res.status(HTTP_STATUS_OK).send({ message: 'Карточка удалена' });
         })
         .catch((err) => {
-          next(err);
+          if (err instanceof mongoose.Error.DocumentNotFoundError) {
+            next(new NotFoundError(`Карточка с _id: ${req.params.cardId} не найдена.`));
+          } else if (err instanceof mongoose.Error.CastError) {
+            next(new BadRequestError(`Некорректный _id карточки: ${req.params.cardId}`));
+          } else {
+            next(err);
+          }
         });
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
-        next(new BadRequestStatus('Некорректный _id карточки.'));
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        next(new NotFoundError(`Карточка с _id: ${req.params.cardId} не найдена.`));
       } else {
         next(err);
       }
