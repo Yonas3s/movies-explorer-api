@@ -50,7 +50,7 @@ module.exports.addMovie = (req, res, next) => {
 };
 
 module.exports.deleteMovie = (req, res, next) => {
-  Movie.findById(req.params.movieId)
+  Movie.findById(req.params.cardId)
     .orFail(new NotFoundStatus('Карточка с указанным _id не найдена.'))
     .then((card) => {
       if (!card.owner.equals(req.user._id)) {
