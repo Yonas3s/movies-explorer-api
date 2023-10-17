@@ -49,24 +49,51 @@ module.exports.addMovie = (req, res, next) => {
     });
 };
 
+// module.exports.deleteMovie = (req, res, next) => {
+//   Movie.findById(req.params.id)
+//     .orFail(new NotFoundStatus('Карточка с указанным _id не найдена.'))
+//     .then((card) => {
+//       if (!card.owner.equals(req.user._id)) {
+//         throw new ForbiddenStatus('Карточка другого пользователя.');
+//       }
+//       Movie.deleteOne(card)
+//         .then(() => {
+//           res.status(HTTP_STATUS_OK).send({ message: 'Карточка удалена.' });
+//         })
+//         .catch((err) => {
+//           next(err);
+//         });
+//     })
+//     .catch((err) => {
+//       if (err instanceof mongoose.Error.CastError) {
+//         next(new BadRequestStatus('Некорректный _id карточки.'));
+//       } else {
+//         next(err);
+//       }
+//     });
+// };
 module.exports.deleteMovie = (req, res, next) => {
-  Movie.findById(req.params.id)
-    .orFail(new NotFoundStatus('Карточка с указанным _id не найдена.'))
-    .then((card) => {
-      if (!card.owner.equals(req.user._id)) {
-        throw new ForbiddenStatus('Карточка другого пользователя.');
+  const { movieId } = req.params;
+  movieSchema
+    .findById(movieId)
+    .orFail(() => {
+      throw new NotFoundStatus('Cannot be found');
+    })
+    .then((movie) => {
+      const owner = movie.owner.toString();
+      if (req.user._id === owner) {
+        movieSchema.deleteOne(movie)
+          .then(() => {
+            res.send(movie);
+          })
+          .catch(next);
+      } else {
+        throw new ForbiddenStatus('Unable to delete movie');
       }
-      Movie.deleteOne(card)
-        .then(() => {
-          res.status(HTTP_STATUS_OK).send({ message: 'Карточка удалена.' });
-        })
-        .catch((err) => {
-          next(err);
-        });
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
-        next(new BadRequestStatus('Некорректный _id карточки.'));
+      if (err.name === 'CastError') {
+        next(new BadRequestStatus('Incorrect data'));
       } else {
         next(err);
       }
