@@ -65,6 +65,10 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Поле должно быть заполнено'],
   },
+    movieId: {
+    type: Number,
+    required: [true, 'Поле должно быть заполнено'],
+  }
 }, { versionKey: false });
 
 module.exports = mongoose.model('movie', movieSchema);
