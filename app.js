@@ -19,9 +19,9 @@ app.use(
   origin: ['https://api.yonasss-movies-diplom.nomoredomainsicu.ru', 'http://localhost:3000'],
   methods: 'GET, HEAD, PUT, PUTCH, POST, DELETE',
   allowedHeaders: ['Content-type', 'Authorization'],
-  credentials: true,
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
+  // credentials: true,
+  // preflightContinue: false,
+  // optionsSuccessStatus: 204,
 })
 );
 
