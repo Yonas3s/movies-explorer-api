@@ -9,9 +9,18 @@ const ConflictStatus = require('../errors/ConflictStatus');
 
 const { SECRET_KEY = 'mesto' } = process.env;
 
+// module.exports.getMeUser = (req, res, next) => {
+//   User.findById(req.user._id)
+//     .then((users) => res.status(HTTP_STATUS_OK).send(users))
+//     .catch(next);
+// };
 module.exports.getMeUser = (req, res, next) => {
-  User.findById(req.user._id)
-    .then((users) => res.status(HTTP_STATUS_OK).send(users))
+  const userId = req.user._id;
+  userSchema.findById(userId)
+    .orFail(() => {
+      throw new NotFound('Пользователь с таким id не найден');
+    })
+    .then((user) => res.send(user))
     .catch(next);
 };
 
