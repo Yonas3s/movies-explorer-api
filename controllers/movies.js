@@ -5,12 +5,6 @@ const BadRequestStatus = require('../errors/BadRequestStatus');
 const NotFoundStatus = require('../errors/NotFoundStatus');
 const ForbiddenStatus = require('../errors/ForbiddenStatus');
 
-module.exports.getMovies = (req, res, next) => {
-  Movie.find({ owner: req.user._id })
-    .then((cards) => res.status(HTTP_STATUS_OK).send(cards))
-    .catch(next);
-};
-
 module.exports.addMovie = (req, res, next) => {
   const {
     country,
@@ -49,25 +43,37 @@ module.exports.addMovie = (req, res, next) => {
     });
 };
 
+module.exports.getMovies = (req, res, next) => {
+  Movie.find({ owner: req.user._id })
+    .then((cards) => res.status(HTTP_STATUS_OK).send(cards))
+    .catch(next);
+};
+
 module.exports.deleteMovie = (req, res, next) => {
-  const { id } = req.params;
-  Movie.findById(id)
-    .orFail(new NotFoundStatus('Карточка с указанным _id не найдена.'))
+  Movie.findById(req.params.movieId)
+    .orFail()
     .then((card) => {
       if (!card.owner.equals(req.user._id)) {
-        throw new ForbiddenStatus('Карточка другого пользователя.');
+        throw new ForbiddenStatus('Карточка другого пользовател');
       }
       Movie.deleteOne(card)
+        .orFail()
         .then(() => {
-          res.status(HTTP_STATUS_OK).send({ message: 'Карточка удалена.' });
+          res.status(HTTP_STATUS_OK).send({ message: 'Карточка удалена' });
         })
         .catch((err) => {
-          next(err);
+          if (err instanceof mongoose.Error.DocumentNotFoundError) {
+            next(new NotFoundStatus(`Карточка с _id: ${req.params.cardId} не найдена.`));
+          } else if (err instanceof mongoose.Error.CastError) {
+            next(new BadRequestStatus(`Некорректный _id карточки: ${req.params.cardId}`));
+          } else {
+            next(err);
+          }
         });
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
-        next(new BadRequestStatus('Некорректный _id карточки.'));
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        next(new NotFoundStatus(`Карточка с _id: ${req.params.cardId} не найдена.`));
       } else {
         next(err);
       }
