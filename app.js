@@ -13,14 +13,7 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { PORT = 3000, DB_URL = 'mongodb://127.0.0.1:27017/bitfilmsdb' } = process.env;
 
 const app = express();
-app.use(cors({
-  origin: ['http://localhost:3000', 'https://api.yonasss-movies-diplom.nomoredomainsicu.ru'],
-  methods: 'GET, POST, PUT, PATCH, DELETE',
-  allowedHeaders: ['Content-type', 'Authorization'],
-  credentials: true,
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
-}));
+app.use(cors());
 
 // Установить заголовки для конкретного источника
 // app.use((req, res, next) => {
