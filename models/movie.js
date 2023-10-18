@@ -25,32 +25,32 @@ const movieSchema = new mongoose.Schema({
   image: {
     type: String,
     required: [true, 'Поле должно быть заполнено'],
-    validate: {
-      validator(url) {
-        return urlRegex.test(url);
-      },
-      message: 'Введите URL',
-    },
+    // validate: {
+    //   validator(url) {
+    //     return urlRegex.test(url);
+    //   },
+    //   message: 'Введите URL',
+    // },
   },
   trailerLink: {
     type: String,
     required: [true, 'Поле должно быть заполнено'],
-    validate: {
-      validator(url) {
-        return urlRegex.test(url);
-      },
-      message: 'Введите URL',
-    },
+    // validate: {
+    //   validator(url) {
+    //     return urlRegex.test(url);
+    //   },
+    //   message: 'Введите URL',
+    // },
   },
   thumbnail: {
     type: String,
     required: [true, 'Поле должно быть заполнено'],
-    validate: {
-      validator(url) {
-        return urlRegex.test(url);
-      },
-      message: 'Введите URL',
-    },
+    // validate: {
+    //   validator(url) {
+    //     return urlRegex.test(url);
+    //   },
+    //   message: 'Введите URL',
+    // },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
