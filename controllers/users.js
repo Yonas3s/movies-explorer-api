@@ -9,33 +9,11 @@ const ConflictStatus = require('../errors/ConflictStatus');
 
 const { SECRET_KEY = 'mesto' } = process.env;
 
-function verifyToken(token) {
-  try {
-    // Проверяем токен на валидность и получаем данные пользователя
-    const decoded = jwt.verify(token, 'секретный_ключ');
-    return decoded; // Возвращаем данные пользователя из токена
-  } catch (err) {
-    throw new Error('Недействительный токен'); // Если токен недействителен, выбрасываем ошибку
-  }
-}
-// module.exports.getMeUser = (req, res, next) => {
-//   User.findById(req.user._id)
-//     .then((user) => res.status(HTTP_STATUS_OK).send(user))
-//     .catch(next);
-// };
-function getMeUser(req, res) {
-  try {
-    const token = req.headers.authorization.split(' ')[1]; // Получаем токен из заголовка Authorization
-    const decoded = verifyToken(token); // Проверяем токен
-    const user = User.findById(decoded.userId); // Находим пользователя по его _id
-    if (!user) {
-      throw new Error('Пользователь не найден');
-    }
-    res.status(200).json(user);
-  } catch (err) {
-    res.status(401).json({ error: err.message });
-  }
-}
+module.exports.getMeUser = (req, res, next) => {
+  User.findById(req.user._id)
+    .then((users) => res.status(HTTP_STATUS_OK).send(users))
+    .catch(next);
+};
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -59,41 +37,23 @@ module.exports.createUser = (req, res, next) => {
       }));
 };
 
-// module.exports.editUserInfo = (req, res, next) => {
-//   const { name, email } = req.body;
-//   User.findByIdAndUpdate(req.user._id, { name, email }, { new: 'true', runValidators: true })
-//     .orFail()
-//     .then((user) => res.status(HTTP_STATUS_OK).send(user))
-//     .catch((err) => {
-//       if (err.code === 11000) {
-//         next(new ConflictStatus(`Пользователь с email: ${email} уже зарегистрирован`));
-//       } else if (err instanceof mongoose.Error.ValidationError) {
-//         next(new BadRequestStatus(err.message));
-//       } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
-//         next(new NotFoundStatus(`Пользователь по указанному _id: ${req.user._id} не найден.`));
-//       } else {
-//         next(err);
-//       }
-//     });
-// };
-
-module.exports.editUserInfo = (req, res) => {
-  try {
-    const token = req.headers.authorization.split(' ')[1]; // Получаем токен из заголовка Authorization
-    const decoded = verifyToken(token); // Проверяем токен
-    const user = User.findById(decoded.userId); // Находим пользователя по его _id
-    if (!user) {
-      throw new Error('Пользователь не найден');
-    }
-    // Обновляем информацию о пользователе
-    user.name = req.body.name;
-    user.email = req.body.email;
-    user.save();
-    res.status(200).json(user);
-  } catch (err) {
-    res.status(401).json({ error: err.message });
-  }
-}
+module.exports.editUserInfo = (req, res, next) => {
+  const { name, email } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, email }, { new: 'true', runValidators: true })
+    .orFail()
+    .then((user) => res.status(HTTP_STATUS_OK).send(user))
+    .catch((err) => {
+      if (err.code === 11000) {
+        next(new ConflictStatus(`Пользователь с email: ${email} уже зарегистрирован`));
+      } else if (err instanceof mongoose.Error.ValidationError) {
+        next(new BadRequestStatus(err.message));
+      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        next(new NotFoundStatus(`Пользователь по указанному _id: ${req.user._id} не найден.`));
+      } else {
+        next(err);
+      }
+    });
+};
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
