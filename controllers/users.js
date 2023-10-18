@@ -24,11 +24,11 @@ module.exports.createUser = (req, res, next) => {
       name, email, password: hash,
     })
       .then((user) => res.status(HTTP_STATUS_CREATED).send({
-        name: user.name, email: user.email, _id: user._id,
+        name: user.name, _id: user._id, email: user.email,
       }))
       .catch((err) => {
         if (err.code === 11000) {
-          next(new ConflictStatus('Пользователь с данным email уже зарегистрирован.'));
+          next(new ConflictStatus(`Пользователь с email: ${email} уже зарегистрирован`));
         } else if (err instanceof mongoose.Error.ValidationError) {
           next(new BadRequestStatus(err.message));
         } else {

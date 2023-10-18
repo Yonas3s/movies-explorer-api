@@ -63,9 +63,9 @@ module.exports.deleteMovie = (req, res, next) => {
         })
         .catch((err) => {
           if (err instanceof mongoose.Error.DocumentNotFoundError) {
-            next(new NotFoundStatus(`Карточка с _id: ${req.params.cardId} не найдена.`));
+            next(new NotFoundStatus(`Карточка с _id не найдена.`));
           } else if (err instanceof mongoose.Error.CastError) {
-            next(new BadRequestStatus(`Некорректный _id карточки: ${req.params.cardId}`));
+            next(new BadRequestStatus(`Некорректный _id карточки`));
           } else {
             next(err);
           }
@@ -73,7 +73,7 @@ module.exports.deleteMovie = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        next(new NotFoundStatus(`Карточка с _id: ${req.params.cardId} не найдена.`));
+        next(new NotFoundStatus(`Карточка с _id не найдена.`));
       } else {
         next(err);
       }
