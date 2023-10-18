@@ -3,23 +3,38 @@ const UnauthorizedStatus = require('../errors/UnauthorizedStatus');
 
 const { SECRET_KEY = 'movies' } = process.env;
 
+// module.exports = (req, res, next) => {
+//   const { authorization } = req.headers;
+
+//   if (!authorization || !authorization.startsWith('Bearer ')) {
+//     next(new UnauthorizedStatus('Необходима авторизация.'));
+//     return;
+//   }
+
+//   const token = authorization.replace('Bearer ', '');
+//   let payload;
+
+//   try {
+//     payload = jwt.verify(token, SECRET_KEY);
+//   } catch (err) {
+//     next(new UnauthorizedStatus('Необходима авторизация.'));
+//     return;
+//   }
+//   req.user = payload;
+//   next();
+// };
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
-
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    next(new UnauthorizedStatus('Необходима авторизация.'));
-    return;
+    return next(new UnauthorizedStatus('You need to log in'));
   }
-
   const token = authorization.replace('Bearer ', '');
   let payload;
-
   try {
-    payload = jwt.verify(token, SECRET_KEY);
+    payload = jwt.verify(token, process.env.NODE_ENV === 'production' ? SECRET_KEY : 'dev-secret');
   } catch (err) {
-    next(new UnauthorizedStatus('Необходима авторизация.'));
-    return;
+    return next(new UnauthorizedStatus('You need to log in'));
   }
   req.user = payload;
-  next();
+  return next();
 };
